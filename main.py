@@ -8,6 +8,10 @@ import requests
 from dotenv import load_dotenv
 
 
+load_dotenv()
+nasa_api_token = os.getenv('NASA_API_TOKEN')
+nasa_request_params = {'api_key': nasa_api_token}
+
 def download_image(image_url, download_path, params=None):
     if params:
         response = requests.get(image_url, params=params)
@@ -58,11 +62,15 @@ def fetch_astronomy_picture_from_nasa(count: int, nasa_request_params: dict):
     response = requests.get(url, params=nasa_request_params)
     response.raise_for_status()
     links_img = [link['hdurl'] for link in response.json()]
+    path_images = []
     for number_img, link_img in enumerate(links_img):
         img_extension = get_file_extension(link_img)
         path_img = apod_images_dir + 'apod' + str(number_img + 1)
         path_img += img_extension
         download_image(link_img, path_img)
+        path_images.append(path_img)
+    return path_images
+
 
 
 def fetch_EPIC_photo(count: int, nasa_request_params: dict):
@@ -84,9 +92,6 @@ def fetch_EPIC_photo(count: int, nasa_request_params: dict):
 
 
 def main():
-    load_dotenv()
-    nasa_api_token = os.getenv('NASA_API_TOKEN')
-    nasa_request_params = {'api_key': nasa_api_token}
     fetch_spacex_launch_by_id()
     fetch_astronomy_picture_from_nasa(2, nasa_request_params)
     fetch_EPIC_photo(2, nasa_request_params)
