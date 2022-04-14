@@ -5,10 +5,7 @@ import requests
 
 
 def download_image(image_url, download_path, params=None):
-    if params:
-        response = requests.get(image_url, params=params)
-    else:
-        response = requests.get(image_url)
+    response = requests.get(image_url, params=params)
     response.raise_for_status()
     with open(str(download_path), 'wb') as file:
         file.write(response.content)
